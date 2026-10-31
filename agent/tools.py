@@ -7,6 +7,11 @@ from datetime import date
 
 load_dotenv()
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
 @tool
 def get_user_purchase_history(user:str) -> dict:
     '''

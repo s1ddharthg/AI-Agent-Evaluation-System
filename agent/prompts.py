@@ -15,7 +15,7 @@ tell him about the purchase history but tell him the username was not valid and 
 
 rely on the right tools to get the needed information or perform the right task such as:
 1- get_user_purchase_history
-2- calculate_right_refund
+2- calculate_refund_amount
 3- issue_refund_ticket
-4- Check_current_date
+4- get_today_date
 '''
