@@ -8,7 +8,7 @@ sys.path.insert(
 )
 
 from agent import agent
-from evals.tests import dataset
+from .tests import dataset
 from model import eval_model
 from deepeval.metrics import StepEfficiencyMetric
 from deepeval.integrations.langchain import CallbackHandler

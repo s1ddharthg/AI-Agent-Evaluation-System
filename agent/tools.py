@@ -38,16 +38,16 @@ def calculate_refund_amount(user:str, items:list[PurchaseItem]) -> str:
     return { "status" : "username not found" }
 
 @tool
-def issue_refund_ticket(user: str, refundAmount: float) -> str:
+def issue_refund_ticket(user: str, refund_amount: float) -> str:
     '''
     this tool will send a ticket to the right teams to return right refund
     '''
     logging.info(f"using issue_refund_ticket tool for user: { user }")
 
-    return f'A refund ticket has been issued successfully for the amount : {refundAmount}'
+    return f'A refund ticket has been issued successfully for the amount : {refund_amount}'
 
 @tool
-def get_today_date():
+def get_today_date() -> str:
     '''
     Return today's date in YYYY-MM-DD format
     This tool takes no arguments

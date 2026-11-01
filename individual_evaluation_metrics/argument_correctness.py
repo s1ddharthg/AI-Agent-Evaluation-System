@@ -8,10 +8,10 @@ sys.path.insert(
 )
 
 from agent import agent
-from evals.tests import dataset
+from .tests import dataset
 from model import eval_model
 
-from deepeval.metrics import ToolCorrectnessMetric
+from deepeval.metrics import ArgumentCorrectnessMetric
 from deepeval.integrations.langchain import CallbackHandler
 from deepeval.test_case import LLMTestCase, ToolCall
 from deepeval import evaluate
@@ -40,12 +40,11 @@ for golden in dataset.goldens:
     test_case = LLMTestCase(
         input=golden.input,
         actual_output=actual_output,
-        tools_called=tools_called,
-        expected_tools=golden.expected_tools
+        tools_called=tools_called
     )
 
     dataset.add_test_case(test_case)
 
-metrics = [ToolCorrectnessMetric(threshold=0.8,model=eval_model,include_reason=True)]
+metrics = [ArgumentCorrectnessMetric(threshold=0.8,model=eval_model,include_reason=True)]
 
 evaluate(test_cases=dataset.test_cases, metrics=metrics)
