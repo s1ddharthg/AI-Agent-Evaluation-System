@@ -47,10 +47,12 @@ def issue_refund_ticket(user: str, refundAmount: float) -> str:
     return f'A refund ticket has been issued successfully for the amount : {refundAmount}'
 
 @tool
-def get_today_date(user: str) -> str:
+def get_today_date():
     '''
-    this tool will return today's date
+    Return today's date in YYYY-MM-DD format
+    This tool takes no arguments
+    only use if a user exist and an item is present for refund
     '''
-    logging.info(f"using get_today_date tool for user: { user }")
+    logging.info(f"using the date tool")
 
-    return date.today()
+    return date.today().isoformat()
