@@ -36,7 +36,9 @@ metrics = [TaskCompletionMetric(threshold=0.8,model=eval_model,task=SUCCESSFUL_T
 
 for golden in dataset.evals_iterator(metrics=metrics):
     response = agent.invoke(
-        {"messages": [{"role": "user", "content": golden.input}]},
-        config={"configurable": {"thread_id": str(uuid4())},
-        "callbacks": [CallbackHandler()]}
+        {
+            "messages": [{"role": "user", "content": golden.input}]},
+            config={"configurable": {"thread_id": str(uuid4())},
+            "callbacks": [CallbackHandler()]
+        }
     )
