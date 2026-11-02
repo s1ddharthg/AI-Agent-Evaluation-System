@@ -1,4 +1,5 @@
 from uuid import uuid4
+from dataclasses import dataclass
 
 from dotenv import load_dotenv
 
@@ -8,7 +9,7 @@ from deepeval.integrations.langchain import CallbackHandler
 from deepeval.metrics import ArgumentCorrectnessMetric, GEval,PlanAdherenceMetric, PlanQualityMetric, StepEfficiencyMetric, TaskCompletionMetric, ToolCorrectnessMetric
 from deepeval.test_case import LLMTestCase, SingleTurnParams, ToolCall, ToolCallParams
 
-from evals.tests import dataset
+from evals.tests import cases, dataset
 from evals.model import eval_model
 from agent.agent import agent
 
@@ -23,6 +24,15 @@ Once the necessary information is available, tell the user whether a refund
 ticket was issued and its amount, or explain why no refund was issued.
 For an information-only request, answer the question without issuing a ticket.
 """
+
+@dataclass(frozen=True)
+class CaseResult:
+    case_id: str
+    tags: tuple[str, ...]
+    expected_ticket_issued: bool
+    expected_refund_amount: float | None
+    expected_refunded_items: tuple[str, ...]
+    test_case: LLMTestCase
 
 
 def build_metrics():
@@ -62,14 +72,15 @@ def main():
     trace_metrics, single_turn_metrics = build_metrics()
     cache_config = CacheConfig(use_cache=False, write_cache=False)
     display_config = DisplayConfig(inspect_after_run=False)
-    test_cases = []
+    results: list[CaseResult] = []
 
     # The callback captures the trace required by the four agentic metrics.
-    for golden in dataset.evals_iterator(
+    goldens = dataset.evals_iterator(
         metrics=trace_metrics,
         cache_config=cache_config,
         display_config=display_config,
-    ):
+    )
+    for case, golden in zip(cases, goldens, strict=True):
         response = agent.invoke(
             {"messages": [{"role": "user", "content": golden.input}]},
             config=
@@ -89,23 +100,31 @@ def main():
                     )
                 )
 
-        test_cases.append(
-            LLMTestCase(
+        test_case = LLMTestCase(
                 input=golden.input,
                 actual_output=response["structured_response"].answer,
                 expected_output=golden.expected_output,
                 tools_called=tools_called,
                 expected_tools=golden.expected_tools,
             )
+        results.append(
+            CaseResult(
+                case_id=case.id,
+                tags=case.tags,
+                expected_ticket_issued=case.expected_ticket_issued,
+                expected_refund_amount=case.expected_refund_amount,
+                expected_refunded_items=case.expected_refunded_items,
+                test_case=test_case,
+            )
         )
 
     evaluate(
-        test_cases=test_cases,
+        test_cases=[result.test_case for result in results],
         metrics=single_turn_metrics,
         cache_config=cache_config,
         display_config=display_config,
     )
-    print(f"\nCompleted all 7 metrics for {len(test_cases)} test cases.")
+    print(f"\nCompleted all 7 metrics for {len(results)} test cases.")
 
 
 if __name__ == "__main__":
