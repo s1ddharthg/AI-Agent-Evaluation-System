@@ -1,8 +1,8 @@
 from langchain.tools import tool
-from data import user_data
+from .data import user_data
 from dotenv import load_dotenv
 import logging
-from objects import PurchaseItem
+from .objects import PurchaseItem
 from datetime import date
 
 load_dotenv()

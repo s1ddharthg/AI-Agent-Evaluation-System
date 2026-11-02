@@ -1,5 +1,3 @@
-import sys
-from pathlib import Path
 from uuid import uuid4
 
 from dotenv import load_dotenv
@@ -10,12 +8,9 @@ from deepeval.integrations.langchain import CallbackHandler
 from deepeval.metrics import ArgumentCorrectnessMetric, GEval,PlanAdherenceMetric, PlanQualityMetric, StepEfficiencyMetric, TaskCompletionMetric, ToolCorrectnessMetric
 from deepeval.test_case import LLMTestCase, SingleTurnParams, ToolCall, ToolCallParams
 
-if __package__:
-    from .tests import dataset
-    from .model import eval_model
-else:
-    from tests import dataset
-    from model import eval_model
+from evals.tests import dataset
+from evals.model import eval_model
+from agent.agent import agent
 
 
 SUCCESSFUL_TASK_DESCRIPTION = """
@@ -63,10 +58,6 @@ def build_metrics():
 
 def main():
     load_dotenv()
-
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "agent"))
-
-    from agent import agent
 
     trace_metrics, single_turn_metrics = build_metrics()
     cache_config = CacheConfig(use_cache=False, write_cache=False)
